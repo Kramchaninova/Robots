@@ -85,7 +85,54 @@ public class MainApplicationFrame extends JFrame
        //сборка меню (верхней строки) из под менюшек
         menuBar.add(createLookAndFeelMenu()); //создание меню (раздела) "Режим отображения"
         menuBar.add(createTestMenu()); //создание меню (раздела) "Тесты"
+        menuBar.add(createExitMenu()); //создание меню "Выход из приложения"
         return menuBar;
+    }
+
+    /**
+     * Создание меню выхода
+     * @return exitMenu - меню выхода
+     */
+    private JMenu createExitMenu() { // нельяз сразу сделать выход, тк JMenu умеет только показывать выборку меню
+        JMenu exitMenu = new JMenu("Выход из приложения");
+        exitMenu.setMnemonic(KeyEvent.VK_F5);//альт+ф
+        exitMenu.add(createExitContent());
+        return exitMenu;
+    }
+
+    /**
+     * Создание содержимого меню
+     * @return exitContent - пункт меню
+     */
+    private JMenuItem createExitContent() {
+        JMenuItem exitContent = new JMenuItem("Выход",KeyEvent.VK_S);
+        exitContent.addActionListener((event)->{//addActionListener - ожидает реакцию пользователя
+            exitConfirmWindow();
+        });
+        return exitContent;
+    }
+
+    /**
+     * Диалог внутри окна с подтверждением на выход
+     */
+    private void exitConfirmWindow() {
+        String[] options = {"Да", "Нет"};
+        //создаем диалог подтверждения выхода
+        int result = JOptionPane.showOptionDialog(
+                this,   //родительский компонент (главное окно, поверх которого мини приложение)
+                "Вы действительно хотите выйти?", //сообщение
+                "Подтверждение выхода", //заголовок окна
+                JOptionPane.YES_NO_OPTION, //варианты ответа (Да/Нет)
+                JOptionPane.QUESTION_MESSAGE, //тип сообщения (вопрос)
+                null, //иконка
+                options, //массив с кнопками
+                options[1]  //кнопка по умолчанию - нет
+        );
+
+        //если результат 0-да, если 1-нет, (-1)- закрыли окно
+        if (result == 0) {
+            System.exit(0);
+        }
     }
 
     /**
