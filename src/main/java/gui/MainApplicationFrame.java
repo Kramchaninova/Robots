@@ -82,12 +82,34 @@ public class MainApplicationFrame extends JFrame
     {
         JMenuBar menuBar = new JMenuBar();
 
+       //сборка меню (верхней строки) из под менюшек
+        menuBar.add(createLookAndFeelMenu()); //создание меню (раздела) "Режим отображения"
+        menuBar.add(createTestMenu()); //создание меню (раздела) "Тесты"
+        return menuBar;
+    }
+
+    /**
+     * Создает меню отображение с внутренним выбором
+     * @return lookAndFeelMenu - меню с выборкой
+     */
+    private JMenu createLookAndFeelMenu(){
         //создание меню "Режим отображения" (типо мини выборка при нажатии)
         JMenu lookAndFeelMenu = new JMenu("Режим отображения");
         lookAndFeelMenu.setMnemonic(KeyEvent.VK_V);//должно устанавливать горячую клавишу "alt-v" для открытия этого меню
         lookAndFeelMenu.getAccessibleContext().setAccessibleDescription(
                 "Управление режимом отображения приложения");
 
+        lookAndFeelMenu.add(createSystemLookAndFeel()); //добавляет пункт(кнопку) в режим отображения
+        lookAndFeelMenu.add(createCrossplatformLookAndFeel());
+        return lookAndFeelMenu;
+
+    }
+
+    /**
+     * Метод создания пункта, выбор меню, кнопку
+     * @return systemLookAndFeel - кнопку
+     */
+    private JMenuItem createSystemLookAndFeel(){
         //выборка в меню "Режим отображения", содержимого меню - "Системная схема" (кнопкой что ли ее назвать)
         JMenuItem systemLookAndFeel = new JMenuItem("Системная схема", KeyEvent.VK_S); //альт+с - выбрать режим (кнопку)
         //создает эту кнопку (часть меню режима отображения)
@@ -95,8 +117,14 @@ public class MainApplicationFrame extends JFrame
             setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); //переключает внешний вид на системный, а в скобках его получает сначала
             this.invalidate();//обновляет окно
         });
-        lookAndFeelMenu.add(systemLookAndFeel); //добавляет пункт(кнопку) в режим отображения
+        return systemLookAndFeel;
+    }
 
+    /**
+     * Метод создания пункта, кнопки из выбора меню...
+     * @return crossplatformLookAndFeel - кнопку
+     */
+    private JMenuItem createCrossplatformLookAndFeel(){
         //тоже самое что и "Системная схема", но переключает на стиль универсальный стиль джава "metal"
         //он стоит он умолчанию обычно, как и в нашем случае
         JMenuItem crossplatformLookAndFeel = new JMenuItem("Универсальная схема", KeyEvent.VK_S);
@@ -104,25 +132,27 @@ public class MainApplicationFrame extends JFrame
             setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             this.invalidate();
         });
-        lookAndFeelMenu.add(crossplatformLookAndFeel);
+        return crossplatformLookAndFeel;
+    }
 
+    /**
+     * Метод создания тестового меню
+     * @return testMenu - тестовое меню
+     */
+    private JMenu createTestMenu(){
         //Создание раздела(меню)
         JMenu testMenu = new JMenu("Тесты");
         testMenu.setMnemonic(KeyEvent.VK_T); //горячая клавиша альт+т
         testMenu.getAccessibleContext().setAccessibleDescription(
                 "Тестовые команды");
-        
+
         //Создание сообщения в окно лога
         JMenuItem addLogMessageItem = new JMenuItem("Сообщение в лог", KeyEvent.VK_S); //альт+с - выбрать режим (кнопку)
         addLogMessageItem.addActionListener((event) -> {
             Logger.debug("Новая строка");
         });
         testMenu.add(addLogMessageItem);
-
-       //сборка меню (верхней строки) из под менюшек
-        menuBar.add(lookAndFeelMenu);
-        menuBar.add(testMenu);
-        return menuBar;
+        return testMenu;
     }
 
     /**
