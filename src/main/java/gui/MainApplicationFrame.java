@@ -12,22 +12,32 @@ import java.awt.event.KeyEvent;
  * Следует разделить его на серию более простых методов (или вообще выделить отдельный класс).
  *
  */
+
+/**
+ * Главное окно приложения, которое содержит еще и внутренние окна
+ * Управляет созданием и видимостью окон игры, лога, и меню
+ */
 public class MainApplicationFrame extends JFrame
 {
+    //Главное окно для размещения внутренних окон (JInternalFrame)
     private final JDesktopPane desktopPane = new JDesktopPane();
-    
+
+    /**
+     * Конструктор главного окна, типа рабочего стола, где все последующие окна будут относительно "фиксированы" на нем
+     * Инициализирует размеры, создает окна лога и игры с определенным отсупом и устанавливает меню
+     */
     public MainApplicationFrame() {
         //Make the big window be indented 50 pixels from each edge
         //of the screen.
-        int inset = 50;        
+        int inset = 50; //отступ от краев экрана относительно главного окна
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(inset, inset,
             screenSize.width  - inset*2,
             screenSize.height - inset*2);
 
         setContentPane(desktopPane);
-        
-        
+
+        //Создание и добавление окон
         LogWindow logWindow = createLogWindow();
         addWindow(logWindow);
 
@@ -35,43 +45,60 @@ public class MainApplicationFrame extends JFrame
         gameWindow.setSize(400,  400);
         addWindow(gameWindow);
 
-        setJMenuBar(generateMenuBar());
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setJMenuBar(generateMenuBar()); //Создание менюшки
+        setDefaultCloseOperation(EXIT_ON_CLOSE); //Метод закрытия окна
     }
-    
+
+    /**
+     * Создает окно лога
+     * @return окно лога
+     */
     protected LogWindow createLogWindow()
     {
-        LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
+        LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource()); //Logger.getDefaultLogSource() - это источник сообщений (куда будут писаться логи)
         logWindow.setLocation(10,10);
         logWindow.setSize(300, 800);
         setMinimumSize(logWindow.getSize());
         logWindow.pack();
-        Logger.debug("Протокол работает");
+        Logger.debug("Протокол работает"); //Пишет в лог сообщение "Протокол работает" для проверки
         return logWindow;
     }
-    
+
+    /**
+     * Добавляет внутреннее окно на главное окно
+     * @param frame
+     */
     protected void addWindow(JInternalFrame frame)
     {
         desktopPane.add(frame);
         frame.setVisible(true);
     }
 
+    /**
+     * Создает меню (верхнюю строку) приложения с пунктами управления,
+     * @return строка меню вверху окна
+     */
     private JMenuBar generateMenuBar()
     {
         JMenuBar menuBar = new JMenuBar();
-        
+
+        //создание меню "Режим отображения" (типо мини выборка при нажатии)
         JMenu lookAndFeelMenu = new JMenu("Режим отображения");
-        lookAndFeelMenu.setMnemonic(KeyEvent.VK_V);
+        lookAndFeelMenu.setMnemonic(KeyEvent.VK_V);//должно устанавливать горячую клавишу "alt-v" для открытия этого меню
         lookAndFeelMenu.getAccessibleContext().setAccessibleDescription(
                 "Управление режимом отображения приложения");
-        
-        JMenuItem systemLookAndFeel = new JMenuItem("Системная схема", KeyEvent.VK_S);
-        systemLookAndFeel.addActionListener((event) -> {
-            setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            this.invalidate();
-        });
-        lookAndFeelMenu.add(systemLookAndFeel);
 
+        //выборка в меню "Режим отображения", содержимого меню - "Системная схема" (кнопкой что ли ее назвать)
+        JMenuItem systemLookAndFeel = new JMenuItem("Системная схема", KeyEvent.VK_S); //альт+с - выбрать режим (кнопку)
+        //создает эту кнопку (часть меню режима отображения)
+        systemLookAndFeel.addActionListener((event) -> {
+            setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); //переключает внешний вид на системный, а в скобках его получает сначала
+            this.invalidate();//обновляет окно
+        });
+        lookAndFeelMenu.add(systemLookAndFeel); //добавляет пункт(кнопку) в режим отображения
+
+        //тоже самое что и "Системная схема", но переключает на стиль универсальный стиль джава "metal"
+        //он стоит он умолчанию обычно, как и в нашем случае
         JMenuItem crossplatformLookAndFeel = new JMenuItem("Универсальная схема", KeyEvent.VK_S);
         crossplatformLookAndFeel.addActionListener((event) -> {
             setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -79,22 +106,30 @@ public class MainApplicationFrame extends JFrame
         });
         lookAndFeelMenu.add(crossplatformLookAndFeel);
 
+        //Создание раздела(меню)
         JMenu testMenu = new JMenu("Тесты");
-        testMenu.setMnemonic(KeyEvent.VK_T);
+        testMenu.setMnemonic(KeyEvent.VK_T); //горячая клавиша альт+т
         testMenu.getAccessibleContext().setAccessibleDescription(
                 "Тестовые команды");
         
-        JMenuItem addLogMessageItem = new JMenuItem("Сообщение в лог", KeyEvent.VK_S);
+        //Создание сообщения в окно лога
+        JMenuItem addLogMessageItem = new JMenuItem("Сообщение в лог", KeyEvent.VK_S); //альт+с - выбрать режим (кнопку)
         addLogMessageItem.addActionListener((event) -> {
             Logger.debug("Новая строка");
         });
         testMenu.add(addLogMessageItem);
 
+       //сборка меню (верхней строки) из под менюшек
         menuBar.add(lookAndFeelMenu);
         menuBar.add(testMenu);
         return menuBar;
     }
-    
+
+    /**
+     * Устанваливает настройки LookAndFeel
+     * при ошибке действия не предусмотрены
+     * @param className
+     */
     private void setLookAndFeel(String className)
     {
         try
