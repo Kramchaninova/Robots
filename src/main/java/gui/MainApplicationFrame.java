@@ -48,7 +48,7 @@ public class MainApplicationFrame extends JFrame
         addWindow(gameWindow);
 
         setJMenuBar(generateMenuBar()); //Создание менюшки
-        setDefaultCloseOperation(EXIT_ON_CLOSE); //автозакрытие, swing генерирует событие на закрытие
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE); //временно отключаем автозакрытие, не генерирует swing событие на закрытие
         addWindowListener(new WindowAdapter() {//вот тут перехватываем событие
             @Override
             public void windowClosing(WindowEvent e) {
@@ -124,7 +124,6 @@ public class MainApplicationFrame extends JFrame
      * Диалог внутри окна с подтверждением на выход
      */
     private void exitConfirmWindow() {
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE); //временно отключаем автозакрытие, не генерирует swing событие на закрытие
         String[] options = {"Да", "Нет"};
         //создаем диалог подтверждения выхода
         int result = JOptionPane.showOptionDialog(
@@ -138,13 +137,8 @@ public class MainApplicationFrame extends JFrame
                 options[1]  //кнопка по умолчанию - нет
         );
 
-        //если результат 0-да, если 1-нет, (-1)- закрыли окно
-        if (result == 0) {
-            setDefaultCloseOperation(EXIT_ON_CLOSE);//возвращаем в автозакрытие
-            WindowEvent closingEvent = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);//создаем новое событие на закрытие, тк старое умерло
-            Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(closingEvent);//отправляем в очередь и там уже Swing видит EXIT_ON_CLOSE и закрывает программу
-        }else{
-            setDefaultCloseOperation(EXIT_ON_CLOSE);
+        if (result == JOptionPane.YES_OPTION) {
+            System.exit(0);
         }
     }
 
