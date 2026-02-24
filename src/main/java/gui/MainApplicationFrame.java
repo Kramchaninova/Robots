@@ -113,12 +113,15 @@ public class MainApplicationFrame extends JFrame
      * @return exitContent - пункт меню
      */
     private JMenuItem createExitContent() {
-        JMenuItem exitContent = new JMenuItem("Выход",KeyEvent.VK_S);
-        exitContent.addActionListener((event)->{//addActionListener - ожидает реакцию пользователя
-            exitConfirmWindow();
+        JMenuItem exitСontent = new JMenuItem("Выход", KeyEvent.VK_X | KeyEvent.VK_ALT);
+        exitСontent.addActionListener((event) -> {
+            Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(
+                    new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         });
-        return exitContent;
+        return exitСontent;
     }
+
+
 
     /**
      * Диалог внутри окна с подтверждением на выход
