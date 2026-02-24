@@ -141,6 +141,7 @@ public class MainApplicationFrame extends JFrame
         );
 
         if (result == JOptionPane.YES_OPTION) {
+            dispose();
             System.exit(0);
         }
     }
